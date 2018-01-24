@@ -8,7 +8,6 @@ class GUI
   public:
 
     ofParameter<bool> plab_monitor;
-    ofParameter<bool> backend_debug_tags;
     ofParameter<bool> backend_debug_pixels;
     ofParameter<bool> flowfield_debug;
 
@@ -22,9 +21,6 @@ class GUI
     {
       p.add( plab_monitor
           .set("plab_monitor", true) );
-
-      p.add( backend_debug_tags
-          .set("backend_debug_tags", true) );
 
       p.add( backend_debug_pixels
           .set("backend_debug_pixels", true) );
