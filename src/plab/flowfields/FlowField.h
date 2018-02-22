@@ -36,6 +36,7 @@ class FlowField
       ff = nullptr;
       ff_w = w;
       ff_h = h; 
+      ff_chan = 4; //rgba TODO flowfield pass chan arg
 
       if (layers.size() == 0)
         ofLogWarning("FlowField") << "initialized with empty layers";
@@ -103,9 +104,17 @@ class FlowField
         layers[i]->render_monitor(x, y+(_h*(i+1)), w, _h);
     };
 
+    void force_at(int x, int y, float& fx, float& fy)
+    {
+      int idx = (x + y * ff_w) * ff_chan;
+      fx = ff[idx];
+      fy = ff[idx+1];
+    };
+
     float* get() { return ff; };
     float width() { return ff_w; };
     float height() { return ff_h; };
+    float channels() { return ff_chan; };
 
 
   private:
@@ -113,6 +122,7 @@ class FlowField
     float* ff;
     float ff_w;
     float ff_h;
+    float ff_chan;
 
     vector<shared_ptr<FlowFieldLayer>> layers;
     gpgpu::Process integration;

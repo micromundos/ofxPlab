@@ -165,6 +165,7 @@ class Particles
 
       b2Vec2 force;
       ofVec2f ff_loc, proj_loc;
+      float fx, fy;
       for (int i = 0; i < n; i++)
       {
         b2Vec2& loc = locs[i]; 
@@ -172,8 +173,9 @@ class Particles
         fisica->world2screen( loc, proj_loc );
         proj2ff.dst( proj_loc, ff_loc );
 
-        int idx = ((int)ff_loc.x + (int)ff_loc.y * ff_w) * 4; //chann:rgba
-        force.Set( ff[idx], ff[idx+1] );
+        //TODO XXX test particles flowfield
+        flowfield->force_at(ff_loc.x, ff_loc.y, fx, fy);
+        force.Set( fx, fy );
 
         if ( max_force > 0 )
         {
