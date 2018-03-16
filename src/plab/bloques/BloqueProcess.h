@@ -10,12 +10,23 @@ class BloqueProcess
   public:
 
     BloqueProcess() {};
-    ~BloqueProcess() {}; 
+    ~BloqueProcess() {};  
 
-    virtual void init(float proj_w, float proj_h) = 0;
-    virtual void update(Bloque& bloque) = 0;
-    virtual void render(Bloque& bloque) = 0;
+    virtual void update(vector<Bloque>& bloques) = 0;
+    virtual void render(vector<Bloque>& bloques) = 0;
     virtual string name() = 0;
+
+    virtual void init(vector<int> ids, float proj_w, float proj_h)
+    {
+      this->ids = ids;
+      this->proj_w = proj_w;
+      this->proj_h = proj_h;
+    };
+
+    vector<int> get_ids()
+    {
+      return ids;
+    };
 
     void dispose() 
     {
@@ -33,5 +44,8 @@ class BloqueProcess
 
     Fisica* fisica;
     Particles* particles;
+
+    vector<int> ids;
+    float proj_w, proj_h;
 };
 

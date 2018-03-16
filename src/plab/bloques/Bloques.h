@@ -22,8 +22,6 @@ class Bloques
       for (int i = 0; i < procs.size(); i++)
         procs[i]->dispose();
       procs.clear(); //TODO will destroy shared_ptr's ???
-
-      proc_tags.clear();
     };
 
     void add(shared_ptr<BloqueProcess> bloque_proc)
@@ -42,13 +40,11 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        procs[i]->inject(fisica, particles);
-        procs[i]->init(proj_w, proj_h);
-
-        string name = procs[i]->name();
         vector<int> ids;
-        plab_config["bloques"][name] >> ids;
-        proc_tags[name] = ids;
+        plab_config["bloques"][procs[i]->name()] >> ids;
+
+        procs[i]->inject(fisica, particles);
+        procs[i]->init(ids, proj_w, proj_h);
       }
     };
 
@@ -56,10 +52,12 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<int> ids = proc_tags[procs[i]->name()];
+        vector<int> ids = procs[i]->get_ids();
+        vector<Bloque> proc_bloques;
         for (auto& id : ids)
           if (bloques.find(id) != bloques.end())
-            procs[i]->update( bloques[id] );
+            proc_bloques.push_back( bloques[id] );
+        procs[i]->update( proc_bloques );
       }
     };
 
@@ -67,17 +65,18 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<int> ids = proc_tags[procs[i]->name()];
+        vector<int> ids = procs[i]->get_ids();
+        vector<Bloque> proc_bloques;
         for (auto& id : ids)
           if (bloques.find(id) != bloques.end())
-            procs[i]->render( bloques[id] );
+            proc_bloques.push_back( bloques[id] );
+        procs[i]->render( proc_bloques );
       }
     };
 
   private:
 
     vector<shared_ptr<BloqueProcess>> procs;
-    map<string, vector<int>> proc_tags;
 
     Fisica* fisica;
     Particles* particles;
