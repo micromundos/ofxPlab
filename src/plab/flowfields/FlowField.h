@@ -69,24 +69,21 @@ class FlowField
       input_tex.clear();
     };
 
+    void update(ofTexture& tex)
+    {
+      if (!tex.isAllocated())
+        return;
+      //input_tex = tex;
+      input_tex = scale_tex(tex, ff_w, ff_h);
+      update_ff();
+    };
+
     void update(ofPixels& pix)
     {
       if (!pix.isAllocated())
         return;
-
-      parse_input(pix, input_pix, input_tex);
-
-      for (int i = 0; i < layers.size(); i++)
-      {
-        layers[i]->update(input_tex);
-        integration.set("layer_"+ofToString(i),layers[i]->get());
-      }
-
-      integration
-        .update()
-        .update_render(gui->plab_monitor);
-
-      ff = integration.get_data();
+      parse_input_pix(pix, input_pix, input_tex);
+      update_ff();
     };
 
     void render(float x, float y, float w, float h)
@@ -129,9 +126,25 @@ class FlowField
 
     ofTexture input_tex;
     ofFloatPixels input_pix;
+    ofFbo scale_fbo;
 
     shared_ptr<GUI> gui;
 
+
+    void update_ff()
+    {
+      for (int i = 0; i < layers.size(); i++)
+      {
+        layers[i]->update(input_tex);
+        integration.set("layer_"+ofToString(i), layers[i]->get());
+      }
+
+      integration
+        .update()
+        .update_render(gui->plab_monitor);
+
+      ff = integration.get_data();
+    };
 
     void update_integration(ofShader& shader)
     {
@@ -142,7 +155,7 @@ class FlowField
         shader.setUniform1f("weight_"+ofToString(i), weight);
     };
 
-    void parse_input(ofPixels& src, ofFloatPixels& dst_pix, ofTexture& dst_tex)
+    void parse_input_pix(ofPixels& src, ofFloatPixels& dst_pix, ofTexture& dst_tex)
     {
       float xscale = ff_w / src.getWidth();
       float yscale = ff_h / src.getHeight();
@@ -165,6 +178,31 @@ class FlowField
 
       dst_tex.loadData(dst_pix);
     }; 
+
+    ofTexture scale_tex(ofTexture& src, int w, int h)
+    {
+      if (!scale_fbo.isAllocated())
+      {
+        ofFbo::Settings s;
+        s.width = w;
+        s.height = h;
+        s.internalformat = GL_RGBA; //GL_RGBA32F_ARB; 
+        s.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
+        s.minFilter = GL_NEAREST;
+        s.maxFilter = GL_NEAREST;
+        s.wrapModeHorizontal = GL_CLAMP;
+        s.wrapModeVertical = GL_CLAMP;
+        scale_fbo.allocate(s); 
+        //scale_fbo.allocate(w, h); 
+      }
+
+      scale_fbo.begin();
+      ofClear(0,255);
+      src.draw(0, 0, w, h);
+      scale_fbo.end();
+
+      return scale_fbo.getTexture(); //a copy
+    };
 };
 
 
