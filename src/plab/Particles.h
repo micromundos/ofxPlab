@@ -61,7 +61,7 @@ class Particles
 
     void update()
     {
-      update_flowfield();
+      update_ff();
       limit_speed();
     }; 
 
@@ -149,7 +149,7 @@ class Particles
     float lifetime; 
 
 
-    void update_flowfield()
+    void update_ff()
     {
       float* ff = flowfield->get();
       float ff_w = flowfield->width();
@@ -173,7 +173,6 @@ class Particles
         fisica->world2screen( loc, proj_loc );
         proj2ff.dst( proj_loc, ff_loc );
 
-        //TODO XXX test particles flowfield
         flowfield->force_at(ff_loc.x, ff_loc.y, fx, fy);
         force.Set( fx, fy );
 

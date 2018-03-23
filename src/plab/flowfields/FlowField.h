@@ -73,7 +73,6 @@ class FlowField
     {
       if (!tex.isAllocated())
         return;
-      //input_tex = tex;
       input_tex = scale_tex(tex, ff_w, ff_h);
       update_ff();
     };
