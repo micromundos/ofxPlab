@@ -10,7 +10,7 @@ class GUI
     ofParameter<bool> plab_monitor;
     ofParameter<bool> backend_debug_pixels;
     ofParameter<bool> flowfield_debug;
-    ofParameter<bool> send_syphon;
+    ofParameter<bool> projector_syphon;
 
     ofParameter<float> container_force_mult;
     //ofParameter<float> canny_threshold;
@@ -23,8 +23,8 @@ class GUI
       p.add( plab_monitor
           .set("plab_monitor", true) );
 
-      p.add( send_syphon
-          .set("send_syphon", false) );
+      p.add( projector_syphon
+          .set("projector_syphon", false) );
 
       p.add( backend_debug_pixels
           .set("backend_debug_pixels", true) );
