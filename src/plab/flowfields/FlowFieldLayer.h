@@ -16,6 +16,6 @@ class FlowFieldLayer
     virtual void init(float w, float h) = 0;
     virtual void update(ofTexture& proj_tex) = 0;
     virtual void dispose() = 0;
-    virtual void render_monitor(float x, float y, float w, float h) = 0;
+    virtual void render_monitor(float x, float& y, float w, float h) = 0;
 };
 

@@ -94,10 +94,10 @@ class FlowField
     {
       if (!gui->plab_monitor)
         return;
-      float _h = h/(layers.size()+1);
-      integration.render(x, y, _h, _h);
+      integration.render(x, y, w, h);
+      y += h;
       for (int i = 0; i < layers.size(); i++)
-        layers[i]->render_monitor(x, y+(_h*(i+1)), w, _h);
+        layers[i]->render_monitor(x, y, w, h);
     };
 
     void force_at(int x, int y, float& fx, float& fy)

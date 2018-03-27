@@ -120,13 +120,22 @@ class FlowFieldContainer : public FlowFieldLayer
         .update_render(gui->plab_monitor);
     };
 
-    void render_monitor(float x, float y, float w, float h)
+    void render_monitor(float x, float& y, float w, float h)
     {
-      float _w = w/3;
-      float _h = _w;
-      edges.get().draw(x, y, _w, _h);
-      gaussian.get().draw(x + _w, y, _w, _h);
-      container.render(x + _w*2, y, _w, _h);
+      if (!gui->plab_monitor)
+        return;
+
+      container.render(x, y, w, h);
+      y += h; 
+
+      if (gui->gaussian_kernel > 0.)
+      {
+        gaussian.get().draw(x, y, w, h);
+        y += h;
+      } 
+
+      edges.get().draw(x, y, w, h);
+      y += h;
 
       //toOf(edges_mat, edges_pix); 
       //if (edges_pix.isAllocated())
