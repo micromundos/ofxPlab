@@ -3,8 +3,8 @@
 #include "ofxGPGPU.h"
 #include "ofxGPGPU/shaders/gaussian.h"
 #include "ofxCv.h"
+#include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
-#include "plab/GUI.h"
 
 class FlowFieldContainer : public FlowFieldLayer
 { 
@@ -27,16 +27,8 @@ class FlowFieldContainer : public FlowFieldLayer
       return container.get_data();
     };
 
-    void inject(shared_ptr<GUI> gui) 
-    {
-      this->gui = gui;
-    }; 
-
     void init(float w, float h) 
     {
-      ff_w = w;
-      ff_h = h; 
-
       edges
         //.init("glsl/openvision/canny.fs", w, h)
         //.on("update",this,&FlowFieldContainer::update_canny); 
@@ -61,7 +53,7 @@ class FlowFieldContainer : public FlowFieldLayer
 
     void dispose() 
     {
-      gui = nullptr;
+      FlowFieldLayer::dispose(); 
 
       edges
         //.off("update",this,&FlowFieldContainer::update_canny)
@@ -79,7 +71,7 @@ class FlowFieldContainer : public FlowFieldLayer
         .dispose();
     };
 
-    void update(ofTexture& proj_tex)
+    void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
     {
       //int canny_kernel = 3;
       //double canny_low_thres = 100;
@@ -145,11 +137,6 @@ class FlowFieldContainer : public FlowFieldLayer
     }; 
 
   private:
-
-    shared_ptr<GUI> gui;
-
-    float ff_w;
-    float ff_h;
 
     gpgpu::Process container;
     gpgpu::Process edges;

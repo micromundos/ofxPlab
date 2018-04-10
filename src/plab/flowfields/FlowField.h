@@ -3,6 +3,8 @@
 #include "ofxCv.h"
 #include "ofxGPGPU.h"
 
+#include "ofxMicromundos/Bloque.h"
+
 #include "plab/GUI.h"
 #include "plab/flowfields/FlowFieldLayer.h"
 
@@ -69,20 +71,20 @@ class FlowField
       input_tex.clear();
     };
 
-    void update(ofTexture& tex)
+    void update(ofTexture& tex, map<int, Bloque>& bloques)
     {
       if (!tex.isAllocated())
         return;
       input_tex = scale_tex(tex, ff_w, ff_h);
-      update_ff();
+      update_ff(bloques);
     };
 
-    void update(ofPixels& pix)
+    void update(ofPixels& pix, map<int, Bloque>& bloques)
     {
       if (!pix.isAllocated())
         return;
       parse_input_pix(pix, input_pix, input_tex);
-      update_ff();
+      update_ff(bloques);
     };
 
     void render(float x, float y, float w, float h)
@@ -130,11 +132,11 @@ class FlowField
     shared_ptr<GUI> gui;
 
 
-    void update_ff()
+    void update_ff(map<int, Bloque>& bloques)
     {
       for (int i = 0; i < layers.size(); i++)
       {
-        layers[i]->update(input_tex);
+        layers[i]->update(input_tex, bloques);
         integration.set("layer_"+ofToString(i), layers[i]->get());
       }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ofxMicromundos/Bloque.h"
 #include "plab/bloques/BloqueProcess.h"
 #include "plab/Fisica.h"
 #include "plab/Particles.h"

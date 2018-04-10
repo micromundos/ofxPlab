@@ -18,6 +18,9 @@ class GUI
     ofParameter<float> gaussian_kernel;
     ofParameter<float> gaussian_sigma;
 
+    ofParameter<float> attractors_force;
+    ofParameter<float> attractors_radius;
+
     void init_params()
     {
       p.add( plab_monitor
@@ -46,6 +49,12 @@ class GUI
 
       p.add( gaussian_sigma
           .set("gaussian_sigma", 5., 0., 20.) );
+
+      p.add( attractors_force
+          .set("attractors_force", 1., -10., 10.) );
+
+      p.add( attractors_radius
+          .set("attractors_radius", 0.17, 0., 1.) );
     };
 
     void init(float w)
