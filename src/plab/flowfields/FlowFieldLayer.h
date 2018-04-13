@@ -21,13 +21,15 @@ class FlowFieldLayer
       gui = nullptr;
     };
 
-    void inject(shared_ptr<GUI> gui) 
+    void inject(shared_ptr<GUI> gui, ofxJSON plab_config) 
     {
       this->gui = gui;
+      this->plab_config = plab_config;
     };
 
   protected:
 
     shared_ptr<GUI> gui;
+    ofxJSON plab_config;
 };
 

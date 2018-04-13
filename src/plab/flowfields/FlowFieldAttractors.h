@@ -4,6 +4,7 @@
 #include "ofxCv.h"
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
+#include "plab/bloques/Bloques.h"
 
 #define ATTRS_LEN 10
 #define ATTRS_LOCS_LEN ATTRS_LEN*2
@@ -79,11 +80,11 @@ class FlowFieldAttractors : public FlowFieldLayer
         attractors_radius[i] = 0.0;
       }
 
+      vector<Bloque> attr_bloques = Bloques::filter(*bloques, plab_config["bloques"]["attractors"]);
+      ofLog() << "attr_bloques " << attr_bloques.size();
       int i = 0;
-      for (auto& kv : *bloques)
+      for (auto& b : attr_bloques)
       {
-        int id = kv.first;
-        Bloque& b = kv.second;
         int ii = i*2; //b loc
         attractors_locs[ ii ] = b.loc.x;
         attractors_locs[ ii + 1 ] = b.loc.y;
@@ -92,7 +93,7 @@ class FlowFieldAttractors : public FlowFieldLayer
         i++;
       }  
 
-      shader.setUniform1i( "attractors_size", bloques->size() );
+      shader.setUniform1i( "attractors_size", attr_bloques.size() );
       shader.setUniform2fv( "attractors_locs", attractors_locs, ATTRS_LEN );
       shader.setUniform1fv( "attractors_force", attractors_force, ATTRS_LEN );
       shader.setUniform1fv( "attractors_radius", attractors_radius, ATTRS_LEN );

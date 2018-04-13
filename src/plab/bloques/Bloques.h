@@ -15,6 +15,24 @@ class Bloques
       dispose();
     };
 
+    static vector<int> ids(Json::Value cfg)
+    {
+      vector<int> _ids;
+      for (int i = 0; i < cfg.size(); i++)
+        _ids.push_back( cfg[i].asInt() );
+      return _ids;
+    };
+
+    static vector<Bloque> filter(map<int, Bloque>& bloques, Json::Value cfg)
+    { 
+      vector<int> ids = Bloques::ids(cfg);
+      vector<Bloque> filtered;
+      for (auto& id : ids)
+        if (bloques.find(id) != bloques.end())
+          filtered.push_back( bloques[id] );
+      return filtered;
+    }; 
+
     void dispose() 
     {
       fisica = nullptr; 
@@ -41,12 +59,8 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<int> ids;
-        Json::Value ls = plab_config["bloques"][procs[i]->name()];
-        for (int j = 0; j < ls.size(); j++)
-          ids.push_back(ls[j].asInt());
-
-        procs[i]->inject(fisica, particles);
+        procs[i]->inject(fisica, particles, plab_config);
+        vector<int> ids = Bloques::ids(plab_config["bloques"][procs[i]->name()]);
         procs[i]->init(ids, proj_w, proj_h);
       }
     };
@@ -55,11 +69,7 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<int> ids = procs[i]->get_ids();
-        vector<Bloque> proc_bloques;
-        for (auto& id : ids)
-          if (bloques.find(id) != bloques.end())
-            proc_bloques.push_back( bloques[id] );
+        vector<Bloque> proc_bloques = Bloques::filter(bloques, plab_config["bloques"][procs[i]->name()]);
         procs[i]->update( proc_bloques );
       }
     };
@@ -68,11 +78,7 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<int> ids = procs[i]->get_ids();
-        vector<Bloque> proc_bloques;
-        for (auto& id : ids)
-          if (bloques.find(id) != bloques.end())
-            proc_bloques.push_back( bloques[id] );
+        vector<Bloque> proc_bloques = Bloques::filter(bloques, plab_config["bloques"][procs[i]->name()]);
         procs[i]->render( proc_bloques );
       }
     };

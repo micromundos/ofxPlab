@@ -28,9 +28,10 @@ class FlowField
         ofLogError("FlowField") << "does not support more than " << MAX_LAYERS << " layers";
     };
 
-    void inject(shared_ptr<GUI> gui) 
+    void inject(shared_ptr<GUI> gui, ofxJSON plab_config) 
     {
       this->gui = gui;
+      this->plab_config = plab_config;
     };
 
     void init(float w, float h) 
@@ -45,7 +46,7 @@ class FlowField
 
       for (int i = 0; i < layers.size(); i++)
       {
-        layers[i]->inject(gui);
+        layers[i]->inject(gui, plab_config);
         layers[i]->init(w, h);
       }
 
@@ -130,6 +131,7 @@ class FlowField
     ofFbo scale_fbo;
 
     shared_ptr<GUI> gui;
+    ofxJSON plab_config;
 
 
     void update_ff(map<int, Bloque>& bloques)
