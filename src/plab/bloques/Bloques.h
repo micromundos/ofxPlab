@@ -29,7 +29,7 @@ class Bloques
       procs.push_back(bloque_proc);
     };
 
-    void inject(Fisica* fisica, Particles* particles, cv::FileStorage plab_config)
+    void inject(Fisica* fisica, Particles* particles, ofxJSON plab_config)
     {
       this->fisica = fisica;
       this->particles = particles;
@@ -41,7 +41,9 @@ class Bloques
       for (int i = 0; i < procs.size(); i++)
       {
         vector<int> ids;
-        plab_config["bloques"][procs[i]->name()] >> ids;
+        Json::Value ls = plab_config["bloques"][procs[i]->name()];
+        for (int j = 0; j < ls.size(); j++)
+          ids.push_back(ls[j].asInt());
 
         procs[i]->inject(fisica, particles);
         procs[i]->init(ids, proj_w, proj_h);
@@ -80,7 +82,7 @@ class Bloques
 
     Fisica* fisica;
     Particles* particles;
-    cv::FileStorage plab_config;
+    ofxJSON plab_config;
 
 };
 
