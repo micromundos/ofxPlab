@@ -58,7 +58,7 @@ class FlowFieldAttractors : public FlowFieldLayer
       vector<Bloque> attr_bloques = bloques->filter("attractor");
       ofPushStyle();
       ofNoFill();
-      ofSetLineWidth(2);
+      ofSetLineWidth(3);
       ofSetColor(ofColor::yellow);
       for (auto& b : attr_bloques)
         ofDrawCircle(
