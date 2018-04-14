@@ -102,14 +102,7 @@ class FlowField
       y += h;
       for (int i = 0; i < layers.size(); i++)
         layers[i]->render_monitor(x, y, w, h);
-    };
-
-    void force_at(int x, int y, float& fx, float& fy)
-    {
-      int idx = (x + y * ff_w) * ff_chan;
-      fx = ff[idx];
-      fy = ff[idx+1];
-    };
+    }; 
 
     float* get() { return ff; };
     float width() { return ff_w; };

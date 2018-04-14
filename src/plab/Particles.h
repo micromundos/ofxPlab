@@ -2,7 +2,6 @@
 
 #include "plab/Fisica.h"
 #include "plab/CoordMap.h"
-#include "plab/flowfields/FlowField.h"
 
 class Particles
 { 
@@ -15,10 +14,9 @@ class Particles
       dispose();
     };
 
-    void inject(Fisica* fisica, FlowField* flowfield) 
+    void inject(Fisica* fisica) 
     {
       this->fisica = fisica;
-      this->flowfield = flowfield;
     };
 
     void init(float proj_w, float proj_h) 
@@ -59,9 +57,9 @@ class Particles
       b2particles = fisica->b2world()->CreateParticleSystem(&psd);
     }; 
 
-    void update()
+    void update(float* ff, float ff_w, float ff_h, float ff_chan)
     {
-      update_ff();
+      update_ff(ff, ff_w, ff_h, ff_chan);
       limit_speed();
     }; 
 
@@ -97,7 +95,6 @@ class Particles
     void dispose()
     {
       fisica = nullptr;
-      flowfield = nullptr;
     };
 
     int32 make_particle( float _locx, float _locy, float _velx, float _vely, ofColor _color )
@@ -129,7 +126,6 @@ class Particles
   private:
 
     Fisica* fisica;
-    FlowField* flowfield;
 
     b2ParticleSystem* b2particles;
     CoordMap proj2ff;
@@ -148,13 +144,8 @@ class Particles
     float render_size;
     float lifetime; 
 
-
-    void update_ff()
+    void update_ff(float* ff, float ff_w, float ff_h, float ff_chan)
     {
-      float* ff = flowfield->get();
-      float ff_w = flowfield->width();
-      float ff_h = flowfield->height();
-
       if (ff == nullptr) 
         return;
 
@@ -165,7 +156,6 @@ class Particles
 
       b2Vec2 force;
       ofVec2f ff_loc, proj_loc;
-      float fx, fy;
       for (int i = 0; i < n; i++)
       {
         b2Vec2& loc = locs[i]; 
@@ -173,7 +163,9 @@ class Particles
         fisica->world2screen( loc, proj_loc );
         proj2ff.dst( proj_loc, ff_loc );
 
-        flowfield->force_at(ff_loc.x, ff_loc.y, fx, fy);
+        int idx = (ff_loc.x + ff_loc.y * ff_w) * ff_chan;
+        float fx = ff[idx];
+        float fy = ff[idx+1];
         force.Set( fx, fy );
 
         if ( max_force > 0 )

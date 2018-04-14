@@ -18,18 +18,14 @@ class Emitter : public BloqueProcess
       BloqueProcess::dispose(); 
     }; 
 
-    string name()
+    void init(float proj_w, float proj_h) 
     {
-      return "emitter";
-    };
-
-    void init(vector<int> ids, float proj_w, float proj_h) 
-    {
-      BloqueProcess::init(ids, proj_w, proj_h); 
+      BloqueProcess::init(proj_w, proj_h); 
 
       proj_diag = sqrt(proj_w*proj_w+proj_h*proj_h);
       initial_fps = fisica->fps();
 
+      vector<int> ids = bloques->ids("emitter");
       for (auto& id : ids)
         emit_remainder[id] = 0.;
 
@@ -39,15 +35,17 @@ class Emitter : public BloqueProcess
       color = ofColor(255,255,255);
     };
 
-    void update(vector<Bloque>& bloques) 
+    void update() 
     {
-      for (auto& b : bloques)
+      vector<Bloque> _bloques = bloques->filter("emitter");
+      for (auto& b : _bloques)
         update(b, emit_remainder[b.id]);
     };
 
-    void render(vector<Bloque>& bloques) 
+    void render() 
     {
-      for (auto& b : bloques)
+      vector<Bloque> _bloques = bloques->filter("emitter");
+      for (auto& b : _bloques)
         render(b);
     }; 
 

@@ -42,9 +42,8 @@ class Bloques
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        procs[i]->inject(fisica, particles, plab_config);
-        vector<int> _ids = ids(procs[i]->name());
-        procs[i]->init(_ids, proj_w, proj_h);
+        procs[i]->inject(this, fisica, particles);
+        procs[i]->init(proj_w, proj_h);
       }
     };
 
@@ -52,25 +51,28 @@ class Bloques
     {
       this->_bloques = &bloques;
       for (int i = 0; i < procs.size(); i++)
-      {
-        vector<Bloque> proc_bloques = filter(procs[i]->name());
-        procs[i]->update( proc_bloques );
-      }
+        procs[i]->update();
     };
 
     void render()
     {
       for (int i = 0; i < procs.size(); i++)
-      {
-        vector<Bloque> proc_bloques = filter(procs[i]->name());
-        procs[i]->render( proc_bloques );
-      }
+        procs[i]->render();
     };
 
     map<int, Bloque>& get()
     {
       return *_bloques;
     }; 
+
+    vector<int> ids(string name)
+    {
+      Json::Value cfg = plab_config["bloques"][name];
+      vector<int> _ids;
+      for (int i = 0; i < cfg.size(); i++)
+        _ids.push_back( cfg[i].asInt() );
+      return _ids;
+    };
 
     vector<Bloque> filter(string name)
     { 
@@ -89,15 +91,6 @@ class Bloques
 
     Fisica* fisica;
     Particles* particles;
-    ofxJSON plab_config;
-
-    vector<int> ids(string name)
-    {
-      Json::Value cfg = plab_config["bloques"][name];
-      vector<int> _ids;
-      for (int i = 0; i < cfg.size(); i++)
-        _ids.push_back( cfg[i].asInt() );
-      return _ids;
-    };
+    ofxJSON plab_config; 
 };
 
