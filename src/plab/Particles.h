@@ -163,7 +163,7 @@ class Particles
         fisica->world2screen( loc, proj_loc );
         proj2ff.dst( proj_loc, ff_loc );
 
-        int idx = (ff_loc.x + ff_loc.y * ff_w) * ff_chan;
+        int idx = ((int)ff_loc.x + (int)ff_loc.y *ff_w) *ff_chan;
         float fx = ff[idx];
         float fy = ff[idx+1];
         force.Set( fx, fy );
