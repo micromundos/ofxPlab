@@ -26,8 +26,9 @@ class FlowFieldTemplate : public FlowFieldLayer
       return proc.get_data();
     }; 
 
-    void init(float w, float h) 
+    void init(float w, float h, float proj_w, float proj_h) 
     {
+      //FlowFieldLayer::init(w, h, proj_w, proj_h);
       //proc
         //.init("proc.frag", w, h)
         //.on("update", this, &FlowFieldTemplate::update_proc); 
@@ -47,6 +48,9 @@ class FlowFieldTemplate : public FlowFieldLayer
         //.update()
         //.update_render(gui->plab_monitor);
     };
+
+    void render()
+    {};
 
     void render_monitor(float x, float& y, float w, float h)
     {

@@ -29,8 +29,10 @@ class FlowFieldAttractors : public FlowFieldLayer
       return proc.get_data();
     }; 
 
-    void init(float w, float h) 
+    void init(float w, float h, float proj_w, float proj_h) 
     {
+      FlowFieldLayer::init(w, h, proj_w, proj_h);
+
       proc
         .init("glsl/flowfields/flowfield_attractors.frag", w, h )
         .on("update", this, &FlowFieldAttractors::update_proc); 
@@ -49,6 +51,21 @@ class FlowFieldAttractors : public FlowFieldLayer
       proc
         .update()
         .update_render(gui->plab_monitor);
+    };
+
+    void render()
+    {
+      vector<Bloque> attr_bloques = bloques->filter("attractor");
+      ofPushStyle();
+      ofNoFill();
+      ofSetLineWidth(2);
+      ofSetColor(ofColor::yellow);
+      for (auto& b : attr_bloques)
+        ofDrawCircle(
+            b.loc.x * proj_w, 
+            b.loc.y * proj_h, 
+            radius_from_knob(b) * min(proj_w, proj_h));
+      ofPopStyle();
     };
 
     void render_monitor(float x, float& y, float w, float h)
@@ -77,6 +94,7 @@ class FlowFieldAttractors : public FlowFieldLayer
       }
 
       vector<Bloque> attr_bloques = bloques->filter("attractor");
+
       int i = 0;
       for (auto& b : attr_bloques)
       {

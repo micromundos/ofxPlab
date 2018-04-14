@@ -34,7 +34,7 @@ class FlowField
       this->bloques = bloques;
     };
 
-    void init(float w, float h) 
+    void init(float w, float h, float proj_w, float proj_h) 
     {
       ff = nullptr;
       ff_w = w;
@@ -47,7 +47,7 @@ class FlowField
       for (int i = 0; i < layers.size(); i++)
       {
         layers[i]->inject(gui, bloques);
-        layers[i]->init(w, h);
+        layers[i]->init(w, h, proj_w, proj_h);
       }
 
       integration
@@ -89,7 +89,13 @@ class FlowField
       update_ff();
     };
 
-    void render(float x, float y, float w, float h)
+    void render()
+    {
+      for (int i = 0; i < layers.size(); i++)
+        layers[i]->render();
+    };
+
+    void render_debug(float x, float y, float w, float h)
     {
       integration.render(x, y, w, h);
     };
@@ -113,9 +119,7 @@ class FlowField
   private:
 
     float* ff;
-    float ff_w;
-    float ff_h;
-    float ff_chan;
+    float ff_w, ff_h, ff_chan;
 
     vector<shared_ptr<FlowFieldLayer>> layers;
     gpgpu::Process integration;
