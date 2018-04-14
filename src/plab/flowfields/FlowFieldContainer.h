@@ -71,7 +71,7 @@ class FlowFieldContainer : public FlowFieldLayer
         .dispose();
     };
 
-    void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
+    void update(ofTexture& proj_tex)
     {
       //int canny_kernel = 3;
       //double canny_low_thres = 100;

@@ -4,7 +4,6 @@
 #include "ofxCv.h"
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
-#include "plab/bloques/Bloques.h"
 
 #define ATTRS_LEN 10
 #define ATTRS_LOCS_LEN ATTRS_LEN*2
@@ -43,12 +42,10 @@ class FlowFieldAttractors : public FlowFieldLayer
       proc
         .off("update", this, &FlowFieldAttractors::update_proc)
         .dispose();
-      bloques = nullptr;
     };
 
-    void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
+    void update(ofTexture& proj_tex)
     {
-      this->bloques = &bloques;
       proc
         .update()
         .update_render(gui->plab_monitor);
@@ -63,7 +60,6 @@ class FlowFieldAttractors : public FlowFieldLayer
   private:
 
     gpgpu::Process proc;
-    map<int, Bloque>* bloques;
 
     //XXX WARNING keep in sync with ATTRS_LEN in fragment shader
     float attractors_locs[ATTRS_LOCS_LEN];
@@ -80,8 +76,7 @@ class FlowFieldAttractors : public FlowFieldLayer
         attractors_radius[i] = 0.0;
       }
 
-      vector<Bloque> attr_bloques = Bloques::filter(*bloques, plab_config["bloques"]["attractors"]);
-      ofLog() << "attr_bloques " << attr_bloques.size();
+      vector<Bloque> attr_bloques = bloques->filter("attractor");
       int i = 0;
       for (auto& b : attr_bloques)
       {

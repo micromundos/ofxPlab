@@ -28,10 +28,10 @@ class FlowField
         ofLogError("FlowField") << "does not support more than " << MAX_LAYERS << " layers";
     };
 
-    void inject(shared_ptr<GUI> gui, ofxJSON plab_config) 
+    void inject(shared_ptr<GUI> gui, Bloques* bloques) 
     {
       this->gui = gui;
-      this->plab_config = plab_config;
+      this->bloques = bloques;
     };
 
     void init(float w, float h) 
@@ -46,7 +46,7 @@ class FlowField
 
       for (int i = 0; i < layers.size(); i++)
       {
-        layers[i]->inject(gui, plab_config);
+        layers[i]->inject(gui, bloques);
         layers[i]->init(w, h);
       }
 
@@ -59,6 +59,7 @@ class FlowField
     {
       ff = nullptr;
       gui = nullptr;
+      bloques = nullptr;
 
       for (int i = 0; i < layers.size(); i++)
         layers[i]->dispose();
@@ -72,20 +73,20 @@ class FlowField
       input_tex.clear();
     };
 
-    void update(ofTexture& tex, map<int, Bloque>& bloques)
+    void update(ofTexture& tex)
     {
       if (!tex.isAllocated())
         return;
       input_tex = scale_tex(tex, ff_w, ff_h);
-      update_ff(bloques);
+      update_ff();
     };
 
-    void update(ofPixels& pix, map<int, Bloque>& bloques)
+    void update(ofPixels& pix)
     {
       if (!pix.isAllocated())
         return;
       parse_input_pix(pix, input_pix, input_tex);
-      update_ff(bloques);
+      update_ff();
     };
 
     void render(float x, float y, float w, float h)
@@ -131,14 +132,13 @@ class FlowField
     ofFbo scale_fbo;
 
     shared_ptr<GUI> gui;
-    ofxJSON plab_config;
+    Bloques* bloques;
 
-
-    void update_ff(map<int, Bloque>& bloques)
+    void update_ff()
     {
       for (int i = 0; i < layers.size(); i++)
       {
-        layers[i]->update(input_tex, bloques);
+        layers[i]->update(input_tex);
         integration.set("layer_"+ofToString(i), layers[i]->get());
       }
 

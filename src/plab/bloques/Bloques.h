@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ofxMicromundos/Bloque.h"
-#include "plab/bloques/BloqueProcess.h"
 #include "plab/Fisica.h"
 #include "plab/Particles.h"
+#include "plab/bloques/BloqueProcess.h"
 
 class Bloques
 { 
@@ -13,30 +13,13 @@ class Bloques
     ~Bloques() 
     {
       dispose();
-    };
-
-    static vector<int> ids(Json::Value cfg)
-    {
-      vector<int> _ids;
-      for (int i = 0; i < cfg.size(); i++)
-        _ids.push_back( cfg[i].asInt() );
-      return _ids;
-    };
-
-    static vector<Bloque> filter(map<int, Bloque>& bloques, Json::Value cfg)
-    { 
-      vector<int> ids = Bloques::ids(cfg);
-      vector<Bloque> filtered;
-      for (auto& id : ids)
-        if (bloques.find(id) != bloques.end())
-          filtered.push_back( bloques[id] );
-      return filtered;
     }; 
 
     void dispose() 
     {
       fisica = nullptr; 
       particles = nullptr;
+      _bloques = nullptr;
 
       for (int i = 0; i < procs.size(); i++)
         procs[i]->dispose();
@@ -53,43 +36,68 @@ class Bloques
       this->fisica = fisica;
       this->particles = particles;
       this->plab_config = plab_config;
-    };
+    }; 
 
     void init(float proj_w, float proj_h)
     {
       for (int i = 0; i < procs.size(); i++)
       {
         procs[i]->inject(fisica, particles, plab_config);
-        vector<int> ids = Bloques::ids(plab_config["bloques"][procs[i]->name()]);
-        procs[i]->init(ids, proj_w, proj_h);
+        vector<int> _ids = ids(procs[i]->name());
+        procs[i]->init(_ids, proj_w, proj_h);
       }
     };
 
     void update(map<int, Bloque>& bloques)
     {
+      this->_bloques = &bloques;
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<Bloque> proc_bloques = Bloques::filter(bloques, plab_config["bloques"][procs[i]->name()]);
+        vector<Bloque> proc_bloques = filter(procs[i]->name());
         procs[i]->update( proc_bloques );
       }
     };
 
-    void render(map<int, Bloque>& bloques)
+    void render()
     {
       for (int i = 0; i < procs.size(); i++)
       {
-        vector<Bloque> proc_bloques = Bloques::filter(bloques, plab_config["bloques"][procs[i]->name()]);
+        vector<Bloque> proc_bloques = filter(procs[i]->name());
         procs[i]->render( proc_bloques );
       }
+    };
+
+    map<int, Bloque>& get()
+    {
+      return *_bloques;
+    }; 
+
+    vector<Bloque> filter(string name)
+    { 
+      vector<int> _ids = ids(name);
+      vector<Bloque> filtered;
+      for (auto& id : _ids)
+        if (_bloques->find(id) != _bloques->end())
+          filtered.push_back( (*_bloques)[id] );
+      return filtered;
     };
 
   private:
 
     vector<shared_ptr<BloqueProcess>> procs;
+    map<int, Bloque>* _bloques;
 
     Fisica* fisica;
     Particles* particles;
     ofxJSON plab_config;
 
+    vector<int> ids(string name)
+    {
+      Json::Value cfg = plab_config["bloques"][name];
+      vector<int> _ids;
+      for (int i = 0; i < cfg.size(); i++)
+        _ids.push_back( cfg[i].asInt() );
+      return _ids;
+    };
 };
 
