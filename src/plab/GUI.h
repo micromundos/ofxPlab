@@ -51,7 +51,7 @@ class GUI
           .set("gaussian_sigma", 5., 0., 20.) );
 
       p.add( attractors_force
-          .set("attractors_force", 1., -10., 10.) );
+          .set("attractors_force", 1., 0., 10.) );
 
       p.add( attractors_radius
           .set("attractors_radius", 0.17, 0., 1.) );

@@ -13,7 +13,12 @@ class FlowFieldAttractors : public FlowFieldLayer
 
   public:
 
-    FlowFieldAttractors() {};
+    FlowFieldAttractors(string bloques_config_name, float force_multiplier) 
+    {
+      this->bloques_config_name = bloques_config_name;
+      this->force_multiplier = force_multiplier;
+    };
+
     ~FlowFieldAttractors() 
     {
       dispose();
@@ -55,16 +60,20 @@ class FlowFieldAttractors : public FlowFieldLayer
 
     void render()
     {
-      vector<Bloque> attr_bloques = bloques->filter("attractor");
+      vector<Bloque> attr_bloques = bloques->filter(bloques_config_name);
       ofPushStyle();
       ofNoFill();
       ofSetLineWidth(3);
-      ofSetColor(ofColor::yellow);
       for (auto& b : attr_bloques)
+      {
+        float k = knob(b);
+        float r = attr_radius(k);
+        ofSetColor(attr_color());
         ofDrawCircle(
             b.loc.x * proj_w, 
             b.loc.y * proj_h, 
-            radius_from_knob(b) * min(proj_w, proj_h));
+            r * min(proj_w, proj_h));
+      }
       ofPopStyle();
     };
 
@@ -77,6 +86,8 @@ class FlowFieldAttractors : public FlowFieldLayer
   private:
 
     gpgpu::Process proc;
+    string bloques_config_name;
+    float force_multiplier;
 
     //XXX WARNING keep in sync with ATTRS_LEN in fragment shader
     float attractors_locs[ATTRS_LOCS_LEN];
@@ -93,16 +104,17 @@ class FlowFieldAttractors : public FlowFieldLayer
         attractors_radius[i] = 0.0;
       }
 
-      vector<Bloque> attr_bloques = bloques->filter("attractor");
+      vector<Bloque> attr_bloques = bloques->filter(bloques_config_name);
 
       int i = 0;
       for (auto& b : attr_bloques)
       {
         int ii = i*2; //b loc
+        float k = knob(b);
         attractors_locs[ ii ] = b.loc.x;
         attractors_locs[ ii + 1 ] = b.loc.y;
-        attractors_force[ i ] = gui->attractors_force;
-        attractors_radius[ i ] = radius_from_knob(b);
+        attractors_force[ i ] = attr_force(k);
+        attractors_radius[ i ] = attr_radius(k);
         i++;
       }  
 
@@ -112,13 +124,34 @@ class FlowFieldAttractors : public FlowFieldLayer
       shader.setUniform1fv( "attractors_radius", attractors_radius, ATTRS_LEN );
     };
 
-    float radius_from_knob(Bloque& b) 
+    //http://stackoverflow.com/questions/13097005/easing-functions-for-bell-curves
+    float knob(Bloque& b) 
     {
-      //http://stackoverflow.com/questions/13097005/easing-functions-for-bell-curves
-      float ang = b.angle_i / TWO_PI;
-      float t = ((sin( TWO_PI * (ang - 0.25f)) + 1) * 0.5);
-      float r = gui->attractors_radius;
-      return ofMap(t, 0., 1., 0.01, r);
+      float ang = b.angle_i / TWO_PI; //[0,1]
+      //return sin(TWO_PI*ang); //sin [-1,1] radius
+      return (sin(TWO_PI*(ang-0.25f))+1)*0.5; //bell curve
+    };
+
+    float attr_force(float k)
+    {
+      return (k < 0. ? -1. : 1.) * gui->attractors_force * force_multiplier;
+    };
+
+    float attr_radius(float k) 
+    {
+      return ofMap(abs(k), 0., 1., 0.07, gui->attractors_radius);
+      //return abs(k) * gui->attractors_radius;
+    };
+
+    ofColor attr_color() 
+    {
+      return force_multiplier < 0. 
+        ? ofColor::fromHex(0xc51b8a) 
+        : ofColor::fromHex(
+            //0x41b6c4);
+            //0x1d91c0);
+            0x1c9099);
+            //0x31a354);
     };
 };
 
