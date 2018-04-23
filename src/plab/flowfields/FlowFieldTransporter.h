@@ -5,13 +5,13 @@
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
 
-class FlowFieldTemplate : public FlowFieldLayer
+class FlowFieldTransporter : public FlowFieldLayer
 { 
 
   public:
 
-    FlowFieldTemplate() {};
-    ~FlowFieldTemplate() 
+    FlowFieldTransporter() {};
+    ~FlowFieldTransporter() 
     {
       dispose();
     }; 
@@ -28,25 +28,25 @@ class FlowFieldTemplate : public FlowFieldLayer
 
     void init(float ff_w, float ff_h, float proj_w, float proj_h) 
     {
-      //FlowFieldLayer::init(ff_w, ff_h, proj_w, proj_h);
-      //proc
-        //.init("proc.frag", ff_w, ff_h)
-        //.on("update", this, &FlowFieldTemplate::update_proc); 
+      FlowFieldLayer::init(ff_w, ff_h, proj_w, proj_h);
+      proc
+        .init("transporter.frag", ff_w, ff_h)
+        .on("update", this, &FlowFieldTransporter::update_proc); 
     };
 
     void dispose() 
     {
       FlowFieldLayer::dispose(); 
-      //proc
-        //.off("update", this, &FlowFieldTemplate::update_proc)
-        //.dispose();
+      proc
+        .off("update", this, &FlowFieldTransporter::update_proc)
+        .dispose();
     };
 
     void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
     {
-      //proc
-        //.update()
-        //.update_render(gui->plab_monitor);
+      proc
+        .update()
+        .update_render(gui->plab_monitor);
     };
 
     void render()
@@ -64,7 +64,7 @@ class FlowFieldTemplate : public FlowFieldLayer
 
     void update_proc(ofShader& shader)
     {
-      shader.setUniform1f("template", 1.0);
+      shader.setUniform1f("transporter", 1.0);
     };
 };
 

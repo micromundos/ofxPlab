@@ -37,7 +37,6 @@ class FlowFieldAttractors : public FlowFieldLayer
     void init(float w, float h, float proj_w, float proj_h) 
     {
       FlowFieldLayer::init(w, h, proj_w, proj_h);
-
       proc
         .init("glsl/flowfields/flowfield_attractors.frag", w, h )
         .on("update", this, &FlowFieldAttractors::update_proc); 
