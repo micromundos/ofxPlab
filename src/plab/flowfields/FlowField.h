@@ -12,7 +12,7 @@ class FlowField
 { 
   public:
 
-    const int MAX_LAYERS = 4; //see flowfield_integration.frag
+    const int MAX_LAYERS = 4; //see integration.frag
 
     FlowField() {};
     ~FlowField() 
@@ -51,7 +51,7 @@ class FlowField
       }
 
       integration
-        .init("glsl/flowfields/flowfield_integration.frag", w, h)
+        .init("glsl/flowfields/integration.frag", w, h)
         .on("update", this, &FlowField::update_integration);
     };
 

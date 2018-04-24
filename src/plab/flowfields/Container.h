@@ -6,13 +6,13 @@
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
 
-class FlowFieldContainer : public FlowFieldLayer
+class Container : public FlowFieldLayer
 { 
 
   public:
 
-    FlowFieldContainer() {};
-    ~FlowFieldContainer() 
+    Container() {};
+    ~Container() 
     {
       dispose();
     }; 
@@ -33,7 +33,7 @@ class FlowFieldContainer : public FlowFieldLayer
 
       edges
         //.init("glsl/openvision/canny.fs", w, h)
-        //.on("update",this,&FlowFieldContainer::update_canny); 
+        //.on("update", this, &Container::update_canny); 
         .init("glsl/openvision/sobel.fs", w, h);
 
       dilate
@@ -46,11 +46,11 @@ class FlowFieldContainer : public FlowFieldLayer
 
       gaussian
         .init(w, h)
-        .on("update",this,&FlowFieldContainer::update_gaussian);
+        .on("update", this, &Container::update_gaussian);
 
       container
-        .init("glsl/flowfields/flowfield_container.frag", w, h)
-        .on("update",this,&FlowFieldContainer::update_container);
+        .init("glsl/flowfields/container.frag", w, h)
+        .on("update", this, &Container::update_container);
     };
 
     void dispose() 
@@ -58,18 +58,18 @@ class FlowFieldContainer : public FlowFieldLayer
       FlowFieldLayer::dispose(); 
 
       edges
-        //.off("update",this,&FlowFieldContainer::update_canny)
+        //.off("update", this, &Container::update_canny)
         .dispose();
 
       dilate.dispose();
       //erode.dispose();
 
       gaussian
-        .off("update",this,&FlowFieldContainer::update_gaussian)
+        .off("update", this, &Container::update_gaussian)
         .dispose();
 
       container
-        .off("update",this,&FlowFieldContainer::update_container)
+        .off("update", this, &Container::update_container)
         .dispose();
     };
 

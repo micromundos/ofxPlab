@@ -5,13 +5,13 @@
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
 
-class FlowFieldTemplate : public FlowFieldLayer
+class Template : public FlowFieldLayer
 { 
 
   public:
 
-    FlowFieldTemplate() {};
-    ~FlowFieldTemplate() 
+    Template() {};
+    ~Template() 
     {
       dispose();
     }; 
@@ -31,18 +31,18 @@ class FlowFieldTemplate : public FlowFieldLayer
       //FlowFieldLayer::init(ff_w, ff_h, proj_w, proj_h);
       //proc
         //.init("proc.frag", ff_w, ff_h)
-        //.on("update", this, &FlowFieldTemplate::update_proc); 
+        //.on("update", this, &Template::update_proc); 
     };
 
     void dispose() 
     {
       FlowFieldLayer::dispose(); 
       //proc
-        //.off("update", this, &FlowFieldTemplate::update_proc)
+        //.off("update", this, &Template::update_proc)
         //.dispose();
     };
 
-    void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
+    void update(ofTexture& proj_tex)
     {
       //proc
         //.update()

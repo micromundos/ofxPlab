@@ -21,6 +21,9 @@ class GUI
     ofParameter<float> attractors_force;
     ofParameter<float> attractors_radius;
 
+    ofParameter<float> transporter_force;
+    ofParameter<float> transporter_radius;
+
     void init_params()
     {
       p.add( plab_monitor
@@ -55,6 +58,12 @@ class GUI
 
       p.add( attractors_radius
           .set("attractors_radius", 0.17, 0., 1.) );
+
+      p.add( transporter_force
+          .set("transporter_force", 1., 0., 10.) );
+
+      p.add( transporter_radius
+          .set("transporter_radius", 0.1, 0., 1.) );
     };
 
     void init(float w)

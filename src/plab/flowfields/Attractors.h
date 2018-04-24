@@ -8,18 +8,18 @@
 #define ATTRS_LEN 10
 #define ATTRS_LOCS_LEN ATTRS_LEN*2
 
-class FlowFieldAttractors : public FlowFieldLayer
+class Attractors : public FlowFieldLayer
 { 
 
   public:
 
-    FlowFieldAttractors(string bloques_config_name, float force_multiplier) 
+    Attractors(string bloques_config_name, float force_multiplier) 
     {
       this->bloques_config_name = bloques_config_name;
       this->force_multiplier = force_multiplier;
     };
 
-    ~FlowFieldAttractors() 
+    ~Attractors() 
     {
       dispose();
     }; 
@@ -38,15 +38,15 @@ class FlowFieldAttractors : public FlowFieldLayer
     {
       FlowFieldLayer::init(w, h, proj_w, proj_h);
       proc
-        .init("glsl/flowfields/flowfield_attractors.frag", w, h )
-        .on("update", this, &FlowFieldAttractors::update_proc); 
+        .init("glsl/flowfields/attractors.frag", w, h )
+        .on("update", this, &Attractors::update_proc); 
     };
 
     void dispose() 
     {
       FlowFieldLayer::dispose(); 
       proc
-        .off("update", this, &FlowFieldAttractors::update_proc)
+        .off("update", this, &Attractors::update_proc)
         .dispose();
     };
 
@@ -59,11 +59,11 @@ class FlowFieldAttractors : public FlowFieldLayer
 
     void render()
     {
-      vector<Bloque> attr_bloques = bloques->filter(bloques_config_name);
+      vector<Bloque> _bloques = bloques->filter(bloques_config_name);
       ofPushStyle();
       ofNoFill();
       ofSetLineWidth(3);
-      for (auto& b : attr_bloques)
+      for (auto& b : _bloques)
       {
         float k = knob(b);
         float r = attr_radius(k);
@@ -103,10 +103,10 @@ class FlowFieldAttractors : public FlowFieldLayer
         attractors_radius[i] = 0.0;
       }
 
-      vector<Bloque> attr_bloques = bloques->filter(bloques_config_name);
+      vector<Bloque> _bloques = bloques->filter(bloques_config_name);
 
       int i = 0;
-      for (auto& b : attr_bloques)
+      for (auto& b : _bloques)
       {
         int ii = i*2; //b loc
         float k = knob(b);
@@ -117,7 +117,7 @@ class FlowFieldAttractors : public FlowFieldLayer
         i++;
       }  
 
-      shader.setUniform1i( "attractors_size", attr_bloques.size() );
+      shader.setUniform1i( "attractors_size", _bloques.size() );
       shader.setUniform2fv( "attractors_locs", attractors_locs, ATTRS_LEN );
       shader.setUniform1fv( "attractors_force", attractors_force, ATTRS_LEN );
       shader.setUniform1fv( "attractors_radius", attractors_radius, ATTRS_LEN );

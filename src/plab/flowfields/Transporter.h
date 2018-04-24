@@ -5,13 +5,13 @@
 #include "ofxMicromundos/Bloque.h"
 #include "plab/flowfields/FlowFieldLayer.h"
 
-class FlowFieldTransporter : public FlowFieldLayer
+class Transporter : public FlowFieldLayer
 { 
 
   public:
 
-    FlowFieldTransporter() {};
-    ~FlowFieldTransporter() 
+    Transporter() {};
+    ~Transporter() 
     {
       dispose();
     }; 
@@ -30,19 +30,19 @@ class FlowFieldTransporter : public FlowFieldLayer
     {
       FlowFieldLayer::init(ff_w, ff_h, proj_w, proj_h);
       proc
-        .init("transporter.frag", ff_w, ff_h)
-        .on("update", this, &FlowFieldTransporter::update_proc); 
+        .init("glsl/flowfields/transporter.frag", ff_w, ff_h)
+        .on("update", this, &Transporter::update_proc); 
     };
 
     void dispose() 
     {
       FlowFieldLayer::dispose(); 
       proc
-        .off("update", this, &FlowFieldTransporter::update_proc)
+        .off("update", this, &Transporter::update_proc)
         .dispose();
     };
 
-    void update(ofTexture& proj_tex, map<int, Bloque>& bloques)
+    void update(ofTexture& proj_tex)
     {
       proc
         .update()
@@ -64,7 +64,13 @@ class FlowFieldTransporter : public FlowFieldLayer
 
     void update_proc(ofShader& shader)
     {
-      shader.setUniform1f("transporter", 1.0);
+      vector<Bloque> _bloques = bloques->filter("transporter");
+      if (_bloques.size() < 2)
+        return;
+      shader.setUniform2f("src", _bloques[0].loc);
+      shader.setUniform2f("dst", _bloques[1].loc);
+      shader.setUniform1f("force", gui->transporter_force);
+      shader.setUniform1f("radius", gui->transporter_radius);
     };
 };
 
