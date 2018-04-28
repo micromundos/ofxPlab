@@ -3,12 +3,12 @@
 #include "ofxMicromundos/Bloque.h"
 #include "plab/bloques/BloqueProcess.h"
 
-class Transporter : public BloqueProcess
+class Portal : public BloqueProcess
 { 
   public:
 
-    Transporter() {};
-    ~Transporter() 
+    Portal() {};
+    ~Portal() 
     {
       dispose();
     };
@@ -25,14 +25,14 @@ class Transporter : public BloqueProcess
 
     void update(vector<Bloque>& bloques) 
     {
-      vector<Bloque> _bloques = bloques->filter("transporter");
+      vector<Bloque> _bloques = bloques->filter("portal");
       for (auto& b : _bloques)
         update(b);
     };
 
     void render() 
     {
-      vector<Bloque> _bloques = bloques->filter("transporter");
+      vector<Bloque> _bloques = bloques->filter("portal");
       for (auto& b : _bloques)
         render(b);
     }; 

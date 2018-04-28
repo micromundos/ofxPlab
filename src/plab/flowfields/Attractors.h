@@ -117,10 +117,10 @@ class Attractors : public FlowFieldLayer
         i++;
       }  
 
-      shader.setUniform1i( "attractors_size", _bloques.size() );
-      shader.setUniform2fv( "attractors_locs", attractors_locs, ATTRS_LEN );
-      shader.setUniform1fv( "attractors_force", attractors_force, ATTRS_LEN );
-      shader.setUniform1fv( "attractors_radius", attractors_radius, ATTRS_LEN );
+      shader.setUniform1i("attractors_size", _bloques.size());
+      shader.setUniform2fv("attractors_locs", attractors_locs, ATTRS_LEN);
+      shader.setUniform1fv("attractors_force", attractors_force, ATTRS_LEN);
+      shader.setUniform1fv("attractors_radius", attractors_radius, ATTRS_LEN);
     };
 
     //http://stackoverflow.com/questions/13097005/easing-functions-for-bell-curves

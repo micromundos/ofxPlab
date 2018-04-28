@@ -65,6 +65,7 @@ class Transporter : public FlowFieldLayer
     void update_proc(ofShader& shader)
     {
       vector<Bloque> _bloques = bloques->filter("transporter");
+      shader.setUniform1i("transporters_size", _bloques.size());
       if (_bloques.size() < 2)
         return;
       shader.setUniform2f("src", _bloques[0].loc);
