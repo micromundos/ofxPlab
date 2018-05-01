@@ -8,7 +8,6 @@ class GUI
   public:
 
     ofParameter<bool> plab_monitor;
-    ofParameter<bool> backend_debug_pixels;
     ofParameter<bool> flowfield_debug;
     ofParameter<bool> projector_syphon;
 
@@ -31,9 +30,6 @@ class GUI
 
       p.add( projector_syphon
           .set("projector_syphon", false) );
-
-      p.add( backend_debug_pixels
-          .set("backend_debug_pixels", true) );
 
       p.add( flowfield_debug
           .set("flowfield_debug", true) );
