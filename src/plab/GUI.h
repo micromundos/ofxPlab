@@ -11,11 +11,14 @@ class GUI
     ofParameter<bool> flowfield_debug;
     ofParameter<bool> projector_syphon;
 
-    ofParameter<float> container_force_mult;
-    //ofParameter<float> canny_threshold;
-    ofParameter<float> edge_dilate;
     ofParameter<float> gaussian_kernel;
     ofParameter<float> gaussian_sigma;
+
+    ofParameter<float> container_force_mult;
+    //ofParameter<float> container_canny_threshold;
+    ofParameter<float> container_edge_dilate;
+    ofParameter<float> container_gaussian_kernel;
+    ofParameter<float> container_gaussian_sigma; 
 
     ofParameter<float> attractors_force;
     ofParameter<float> attractors_radius;
@@ -31,23 +34,29 @@ class GUI
       p.add( projector_syphon
           .set("projector_syphon", false) );
 
+      p.add( gaussian_kernel
+          .set("gaussian_kernel", 3., 0., 10.) );
+
+      p.add( gaussian_sigma
+          .set("gaussian_sigma", 5., 0., 20.) );
+
       p.add( flowfield_debug
           .set("flowfield_debug", true) );
 
       p.add( container_force_mult
           .set("container_force_mult", 1., 0., 10.) );
 
-      //p.add( canny_threshold
-          //.set("canny_threshold", 1., 0., 10.) );
+      //p.add( container_canny_threshold
+          //.set("container_canny_threshold", 1., 0., 10.) );
 
-      p.add( edge_dilate
-          .set("edge_dilate", 1., 0., 10.) );
+      p.add( container_edge_dilate
+          .set("container_edge_dilate", 1., 0., 10.) );
 
-      p.add( gaussian_kernel
-          .set("gaussian_kernel", 3., 0., 10.) );
+      p.add( container_gaussian_kernel
+          .set("container_gaussian_kernel", 3., 0., 10.) );
 
-      p.add( gaussian_sigma
-          .set("gaussian_sigma", 5., 0., 20.) );
+      p.add( container_gaussian_sigma
+          .set("container_gaussian_sigma", 5., 0., 20.) );
 
       p.add( attractors_force
           .set("attractors_force", 1., 0., 10.) );

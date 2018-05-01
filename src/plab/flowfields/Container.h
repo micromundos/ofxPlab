@@ -80,18 +80,18 @@ class Container : public FlowFieldLayer
       //double canny_high_thres = 150;
       //cv::Canny(src, edges_mat, canny_low_thres, canny_high_thres, canny_kernel);
       //ofxCv::invert(edges_mat);
-      //cv::GaussianBlur(edges_mat, edges_mat, cv::Size(gui->gaussian_kernel, gui->gaussian_kernel), (double)gui->gaussian_sigma);
+      //cv::GaussianBlur(edges_mat, edges_mat, cv::Size(gui->container_gaussian_kernel, gui->container_gaussian_kernel), (double)gui->container_gaussian_sigma);
 
       edges
         .set("tex", proj_tex)
         .update();
 
       ofTexture* _edges;
-      if (gui->edge_dilate > 0.)
+      if (gui->container_edge_dilate > 0.)
       {
         dilate
           .set("tex", edges.get())
-          .update(gui->edge_dilate);
+          .update(gui->container_edge_dilate);
         //erode
           //.set("tex", dilate.get())
           //.update(2);
@@ -100,7 +100,7 @@ class Container : public FlowFieldLayer
       else
         _edges = &(edges.get());
 
-      if (gui->gaussian_kernel > 0.)
+      if (gui->container_gaussian_kernel > 0.)
       {
         gaussian
           .set("data", *_edges)
@@ -125,7 +125,7 @@ class Container : public FlowFieldLayer
       container.render(x, y, w, h);
       y += h; 
 
-      if (gui->gaussian_kernel > 0.)
+      if (gui->container_gaussian_kernel > 0.)
       {
         gaussian.get().draw(x, y, w, h);
         y += h;
@@ -156,13 +156,13 @@ class Container : public FlowFieldLayer
 
     //void update_canny(ofShader& shader)
     //{
-      //shader.setUniform1f("threshold", gui->canny_threshold);
+      //shader.setUniform1f("threshold", gui->container_canny_threshold);
     //};
 
     void update_gaussian(ofShader& shader)
     {
-      shader.setUniform1f("sigma", gui->gaussian_sigma);
-      shader.setUniform1i("kernel", gui->gaussian_kernel);
+      shader.setUniform1f("sigma", gui->container_gaussian_sigma);
+      shader.setUniform1i("kernel", gui->container_gaussian_kernel);
       shader.setUniform1f("alpha", 1.0);
     }; 
 };
