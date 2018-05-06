@@ -9,7 +9,7 @@ class GUI
 
     ofParameter<bool> plab_monitor;
     ofParameter<bool> flowfield_debug;
-    ofParameter<bool> projector_syphon;
+    ofParameter<bool> syphon_projector;
 
     ofParameter<float> gaussian_kernel;
     ofParameter<float> gaussian_sigma;
@@ -31,8 +31,8 @@ class GUI
       p.add( plab_monitor
           .set("plab_monitor", true) );
 
-      p.add( projector_syphon
-          .set("projector_syphon", false) );
+      p.add( syphon_projector
+          .set("syphon_projector", false) );
 
       p.add( gaussian_kernel
           .set("gaussian_kernel", 3., 0., 10.) );
