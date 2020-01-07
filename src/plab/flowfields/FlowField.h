@@ -4,6 +4,7 @@
 #include "ofxGPGPU.h"
 
 #include "ofxMicromundos/Bloque.h"
+#include "ofxMicromundos/utils.h"
 
 #include "plab/GUI.h"
 #include "plab/flowfields/FlowFieldLayer.h"
@@ -161,7 +162,7 @@ class FlowField
       float yscale = ff_h / src.getHeight();
 
       ofPixels scaled;
-      ofxCv::resize(src, scaled, xscale, yscale);
+      ofxMicromundos::resize(src, scaled, xscale, yscale);
 
       if (!dst_pix.isAllocated())
         dst_pix.allocate(scaled.getWidth(), scaled.getHeight(), 4);

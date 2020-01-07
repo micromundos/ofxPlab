@@ -11,6 +11,7 @@ class GUI
     ofParameter<bool> flowfield_debug;
     ofParameter<bool> render_blobs;
     ofParameter<bool> render_backend_tex;
+    ofParameter<bool> blur_backend_tex;
 
     ofParameter<float> gaussian_kernel;
     ofParameter<float> gaussian_sigma;
@@ -42,6 +43,9 @@ class GUI
 
       p.add( render_backend_tex
           .set("render_backend_tex", true) );
+
+      p.add( blur_backend_tex
+          .set("blur_backend_tex", true) );
 
 #ifdef micromundos_USE_SYPHON
       p.add( syphon_projector
