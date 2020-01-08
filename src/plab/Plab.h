@@ -59,7 +59,7 @@ class Plab
     {
       bloques.update(_bloques);
       flowfield.update(proj_pix);
-      particles.update(flowfield.get(), flowfield.width(), flowfield.height(), flowfield.channels());
+      particles.update(proj_pix, flowfield.get(), flowfield.width(), flowfield.height(), flowfield.channels());
       fisica.update();
     };
 

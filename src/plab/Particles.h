@@ -29,7 +29,8 @@ class Particles
       max_speed = 3.;
       max_force = 0.;
       render_size = 4.;
-      lifetime = 15.;
+      lifetime = 3.; //15.;
+      infinite_lifetime = -1.;
 
       mesh.setMode( OF_PRIMITIVE_POINTS );
 
@@ -57,11 +58,28 @@ class Particles
       b2particles = fisica->b2world()->CreateParticleSystem(&psd);
     }; 
 
-    void update(float* ff, float ff_w, float ff_h, float ff_chan)
+    void update(
+        ofPixels& proj_pix, 
+        float* ff, 
+        float ff_w, 
+        float ff_h, 
+        float ff_chan)
     {
+      //update_lifetime(proj_pix);
       update_ff(ff, ff_w, ff_h, ff_chan);
       limit_speed();
     }; 
+
+    void update(
+        ofTexture& proj_tex, 
+        float* ff, 
+        float ff_w, 
+        float ff_h, 
+        float ff_chan)
+    {
+      update_ff(ff, ff_w, ff_h, ff_chan);
+      limit_speed();
+    };
 
     void render()
     {
@@ -143,6 +161,23 @@ class Particles
     float max_force;
     float render_size;
     float lifetime; 
+    float infinite_lifetime;
+
+    void update_lifetime(ofPixels& proj_pix)
+    {
+      int32 n = b2particles->GetParticleCount();
+      b2Vec2 *locs = b2particles->GetPositionBuffer(); 
+      ofVec2f proj_loc;
+      for (int i = 0; i < n; i++)
+      {
+        b2Vec2& loc = locs[i]; 
+        fisica->world2screen( loc, proj_loc );
+        ofColor c = proj_pix.getColor(proj_loc.x, proj_loc.y);
+        //lifetime infinito si esta parada en tierra firme
+        float lt = c.r > 0 ? infinite_lifetime : lifetime;
+        b2particles->SetParticleLifetime(i, lt);
+      }
+    };
 
     void update_ff(float* ff, float ff_w, float ff_h, float ff_chan)
     {
