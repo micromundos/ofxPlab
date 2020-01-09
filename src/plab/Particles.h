@@ -29,8 +29,8 @@ class Particles
       max_speed = 3.;
       max_force = 0.;
       render_size = 4.;
-      lifetime = 3.; //15.;
-      infinite_lifetime = -1.;
+      lifetime = 20.;
+      infinite_life = -1.;
 
       mesh.setMode( OF_PRIMITIVE_POINTS );
 
@@ -161,8 +161,9 @@ class Particles
     float max_force;
     float render_size;
     float lifetime; 
-    float infinite_lifetime;
+    float infinite_life;
 
+    //TODO Tierra
     void update_lifetime(ofPixels& proj_pix)
     {
       int32 n = b2particles->GetParticleCount();
@@ -174,9 +175,12 @@ class Particles
         fisica->world2screen( loc, proj_loc );
         ofColor c = proj_pix.getColor(proj_loc.x, proj_loc.y);
         //lifetime infinito si esta parada en tierra firme
-        float lt = c.r > 0 ? infinite_lifetime : lifetime;
+        int tierra = c.getHex();
+        float lt = tierra > 0 ? infinite_life : lifetime;
+        ofLog() << ofToString(i) << " tierra " << tierra << " lt " << ofToString(lt);
         b2particles->SetParticleLifetime(i, lt);
       }
+      ofLog() << "---" << ofToString(n);
     };
 
     void update_ff(float* ff, float ff_w, float ff_h, float ff_chan)
