@@ -39,6 +39,8 @@ class Emitter : public BloqueProcess
         .get("YlOrRd", ofClamp(len, 1, 9));
         //.get("RdPu", ofClamp(len, 1, 9));
 
+      cols.erase(cols.begin());
+
       for (auto& id : ids)
       {
         emit_remainder[id] = 0.;

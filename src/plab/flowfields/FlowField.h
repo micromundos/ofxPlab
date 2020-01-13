@@ -198,7 +198,7 @@ class FlowField
       }
 
       scale_fbo.begin();
-      ofClear(0,255);
+      ofClear(0, 255);
       src.draw(0, 0, w, h);
       scale_fbo.end();
 

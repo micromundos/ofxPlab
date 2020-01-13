@@ -6,6 +6,7 @@
 
 #include "plab/Fisica.h"
 #include "plab/Particles.h"
+#include "plab/Tierra.h"
 
 #include "plab/bloques/Bloques.h"
 #include "plab/bloques/Emitter.h"
@@ -30,7 +31,7 @@ class Plab
     void inject(shared_ptr<GUI> gui, ofxJSON plab_config)
     {
       flowfield.inject(gui, &bloques);
-      particles.inject(&fisica);
+      particles.inject(&fisica, &tierra);
       bloques.inject(&fisica, &particles, plab_config);
       ff_w = plab_config["flow_field"]["width"].asFloat();
       ff_h = plab_config["flow_field"]["height"].asFloat();
@@ -40,6 +41,7 @@ class Plab
     {
       fisica.init();
       particles.init(proj_w, proj_h);
+      tierra.init(proj_w, proj_h);
 
       flowfield.add(make_shared<Container>());
       flowfield.add(make_shared<Attractors>("attractor", 1));
@@ -58,8 +60,13 @@ class Plab
     void update(ProjPix& proj_pix, map<int, Bloque>& _bloques)
     {
       bloques.update(_bloques);
+      tierra.update(proj_pix);
       flowfield.update(proj_pix);
-      particles.update(proj_pix, flowfield.get(), flowfield.width(), flowfield.height(), flowfield.channels());
+      particles.update(
+        flowfield.get(),
+        flowfield.width(),
+        flowfield.height(),
+        flowfield.channels());
       fisica.update();
     };
 
@@ -87,6 +94,7 @@ class Plab
 
     Fisica fisica;
     Particles particles;
+    Tierra tierra;
     FlowField flowfield;
     Bloques bloques;
 

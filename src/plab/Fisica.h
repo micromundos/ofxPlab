@@ -70,23 +70,23 @@ class Fisica
 
     //utils
 
-    void world2screen( const b2Vec2& src, ofVec2f& dst ) 
+    void world_to_screen( const b2Vec2& src, ofVec2f& dst ) 
     {
-      world2screen( src.x, src.y, dst.x, dst.y );
+      world_to_screen( src.x, src.y, dst.x, dst.y );
     };
 
-    void world2screen( float src_x, float src_y, float& dst_x, float& dst_y ) 
+    void world_to_screen( float src_x, float src_y, float& dst_x, float& dst_y ) 
     {
       dst_x = src_x * _scale;
       dst_y = src_y * _scale;
     };
 
-    void screen2world( const ofVec2f& src, b2Vec2& dst ) 
+    void screen_to_world( const ofVec2f& src, b2Vec2& dst ) 
     {
-      screen2world( src.x, src.y, dst.x, dst.y );
+      screen_to_world( src.x, src.y, dst.x, dst.y );
     }; 
 
-    void screen2world( float src_x, float src_y, float& dst_x, float& dst_y ) 
+    void screen_to_world( float src_x, float src_y, float& dst_x, float& dst_y ) 
     {
       dst_x = src_x / _scale;
       dst_y = src_y / _scale;

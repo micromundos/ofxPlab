@@ -1,6 +1,7 @@
 #pragma once
 
 #include "plab/Fisica.h"
+#include "plab/Tierra.h"
 #include "plab/CoordMap.h"
 
 class Particles
@@ -14,9 +15,10 @@ class Particles
       dispose();
     };
 
-    void inject(Fisica* fisica) 
+    void inject(Fisica* fisica, Tierra* tierra) 
     {
       this->fisica = fisica;
+      this->tierra = tierra;
     };
 
     void init(float proj_w, float proj_h) 
@@ -29,10 +31,10 @@ class Particles
       max_speed = 3.;
       max_force = 0.;
       render_size = 4.;
-      lifetime = 20.;
-      infinite_life = -1.;
+      lifetime = 1.; //20.;
+      lifetime_tierra = 10.; //-1.;
 
-      mesh.setMode( OF_PRIMITIVE_POINTS );
+      mesh.setMode(OF_PRIMITIVE_POINTS);
 
       //ofcolor.set( 127, 200, 255 );
       //b2color.Set(ofcolor.r, ofcolor.g, ofcolor.b, ofcolor.a);
@@ -59,27 +61,15 @@ class Particles
     }; 
 
     void update(
-        ofPixels& proj_pix, 
-        float* ff, 
-        float ff_w, 
-        float ff_h, 
+        float* ff,
+        float ff_w,
+        float ff_h,
         float ff_chan)
     {
-      //update_lifetime(proj_pix);
+      update_lifetime();
       update_ff(ff, ff_w, ff_h, ff_chan);
       limit_speed();
     }; 
-
-    void update(
-        ofTexture& proj_tex, 
-        float* ff, 
-        float ff_w, 
-        float ff_h, 
-        float ff_chan)
-    {
-      update_ff(ff, ff_w, ff_h, ff_chan);
-      limit_speed();
-    };
 
     void render()
     {
@@ -91,20 +81,20 @@ class Particles
 
       ofVec2f loc;
       ofColor col;
-      for ( int i = 0; i < n; i++ )
+      for (int i = 0; i < n; i++)
       {
-        loc.set( locs[i].x, locs[i].y );
-        col.set( cols[i].r, cols[i].g, cols[i].b );
-        mesh.addVertex( loc );
-        mesh.addColor( col );
+        loc.set(locs[i].x, locs[i].y);
+        col.set(cols[i].r, cols[i].g, cols[i].b);
+        mesh.addVertex(loc);
+        mesh.addColor(col);
       }
 
       ofPushStyle();
       ofSetColor(255);
       ofSetLineWidth(0.1);
-      glPointSize( render_size );
+      glPointSize(render_size);
       ofPushMatrix();
-      ofScale( fisica->scale(), fisica->scale() );
+      ofScale(fisica->scale(), fisica->scale());
       mesh.draw();
       ofPopMatrix();
       ofPopStyle();
@@ -113,27 +103,34 @@ class Particles
     void dispose()
     {
       fisica = nullptr;
+      tierra = nullptr;
+      particles_in_tierra.clear();
     };
 
-    int32 make_particle( float _locx, float _locy, float _velx, float _vely, ofColor _color )
+    int32 make_particle(float _locx, float _locy, float _velx, float _vely, ofColor _color)
     {
       float locx, locy, velx, vely;
-      fisica->screen2world(_locx, _locy, locx, locy);
-      fisica->screen2world(_velx, _vely, velx, vely);
+      fisica->screen_to_world(_locx, _locy, locx, locy);
+      fisica->screen_to_world(_velx, _vely, velx, vely);
 
       uint32 flags = b2_waterParticle | /*b2_springParticle |*/ b2_viscousParticle;
 
       b2ParticleDef pd;
       pd.flags = flags;
-      pd.position.Set( locx, locy );
-      pd.velocity.Set( velx, vely );
+      pd.position.Set(locx, locy);
+      pd.velocity.Set(velx, vely);
       b2ParticleColor p_color;
       p_color.Set(_color.r, _color.g, _color.b, 255.0);
       pd.color = p_color;
-      if ( lifetime > 0.0 )
-        pd.lifetime = lifetime; 
+      pd.lifetime = lifetime; 
 
-      return b2particles->CreateParticle( pd );
+      int i = b2particles->CreateParticle(pd);
+
+      set<int>::iterator it = particles_in_tierra.find(i);
+      if (it != particles_in_tierra.end())
+        particles_in_tierra.erase(it);
+
+      return i;
     }; 
 
     b2ParticleSystem* b2_particles()
@@ -144,9 +141,10 @@ class Particles
   private:
 
     Fisica* fisica;
+    Tierra* tierra;
 
     b2ParticleSystem* b2particles;
-    CoordMap proj2ff;
+    CoordMap screen_to_ff;
 
     ofVboMesh mesh;
 
@@ -160,66 +158,90 @@ class Particles
     float max_speed;
     float max_force;
     float render_size;
-    float lifetime; 
-    float infinite_life;
 
-    //TODO Tierra
-    void update_lifetime(ofPixels& proj_pix)
+    float lifetime; 
+    float lifetime_tierra;
+    set<int> particles_in_tierra;
+
+    void update_lifetime()
     {
       int32 n = b2particles->GetParticleCount();
       b2Vec2 *locs = b2particles->GetPositionBuffer(); 
-      ofVec2f proj_loc;
+      ofVec2f screen_loc;
+
       for (int i = 0; i < n; i++)
       {
         b2Vec2& loc = locs[i]; 
-        fisica->world2screen( loc, proj_loc );
-        ofColor c = proj_pix.getColor(proj_loc.x, proj_loc.y);
-        //lifetime infinito si esta parada en tierra firme
-        int tierra = c.getHex();
-        float lt = tierra > 0 ? infinite_life : lifetime;
-        ofLog() << ofToString(i) << " tierra " << tierra << " lt " << ofToString(lt);
-        b2particles->SetParticleLifetime(i, lt);
+        fisica->world_to_screen(loc, screen_loc);
+        bool tierra_firme = tierra->is_tierra_firme(screen_loc);
+
+        set<int>::iterator it = particles_in_tierra.find(i);
+        bool saved_in_tierra = it != particles_in_tierra.end();
+
+        //enter tierra firme
+        if (tierra_firme && !saved_in_tierra)
+        {
+          particles_in_tierra.insert(i);
+          b2particles->SetParticleLifetime(i, lifetime_tierra);
+        }
+
+        //leave tierra firme
+        if (!tierra_firme && saved_in_tierra)
+        {
+          particles_in_tierra.erase(it);
+          b2particles->SetParticleLifetime(i, lifetime);
+        }
+
+        //left tierra but still w/lifetime_tierra -> zombies???
+        //if (!tierra_firme && !saved_in_tierra && b2particles->GetParticleLifetime(i) > lifetime)
+          //b2particles->SetParticleLifetime(i, lifetime);
       }
-      ofLog() << "---" << ofToString(n);
     };
 
-    void update_ff(float* ff, float ff_w, float ff_h, float ff_chan)
+    void update_ff(
+        float* ff,
+        float ff_w,
+        float ff_h,
+        float ff_chan)
     {
       if (ff == nullptr) 
+      {
+        ofLogError() << "Particle::update flowfield is nullptr";
         return;
+      }
 
-      proj2ff.set(proj_w, proj_h, ff_w, ff_h);
+      screen_to_ff.set(proj_w, proj_h, ff_w, ff_h);
 
       int32 n = b2particles->GetParticleCount();
       b2Vec2 *locs = b2particles->GetPositionBuffer(); 
 
       b2Vec2 force;
-      ofVec2f ff_loc, proj_loc;
+      ofVec2f ff_loc, screen_loc;
       for (int i = 0; i < n; i++)
       {
         b2Vec2& loc = locs[i]; 
 
-        fisica->world2screen( loc, proj_loc );
-        proj2ff.dst( proj_loc, ff_loc );
+        fisica->world_to_screen(loc, screen_loc);
+        screen_to_ff.dst(screen_loc, ff_loc);
 
         int idx = ((int)ff_loc.x + (int)ff_loc.y *ff_w) *ff_chan;
         float fx = ff[idx];
         float fy = ff[idx+1];
-        force.Set( fx, fy );
+        force.Set(fx, fy);
 
-        if ( max_force > 0 )
+        if (max_force > 0)
         {
           float len = force.Normalize();
           force *= len > max_force ? max_force : len;
         }
 
-        b2particles->ParticleApplyForce( i, force );
+        b2particles->ParticleApplyForce(i, force);
       }
     };
 
     void limit_speed()
     {
-      if ( max_speed == 0.0 )
+      if (max_speed == 0.0)
         return;
 
       int32 n = b2particles->GetParticleCount();
@@ -231,6 +253,5 @@ class Particles
         vel *= len > max_speed ? max_speed : len;
       }
     };
-
 };
 
