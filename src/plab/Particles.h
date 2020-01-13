@@ -125,8 +125,9 @@ class Particles
       pd.lifetime = lifetime; 
 
       int i = b2particles->CreateParticle(pd);
+      const b2ParticleHandle* handle = b2particles->GetParticleHandleFromIndex(i);
 
-      set<int>::iterator it = particles_in_tierra.find(i);
+      set<const b2ParticleHandle*>::iterator it = particles_in_tierra.find(handle);
       if (it != particles_in_tierra.end())
         particles_in_tierra.erase(it);
 
@@ -161,7 +162,7 @@ class Particles
 
     float lifetime; 
     float lifetime_tierra;
-    set<int> particles_in_tierra;
+    set<const b2ParticleHandle*> particles_in_tierra;
 
     void update_lifetime()
     {
@@ -171,17 +172,19 @@ class Particles
 
       for (int i = 0; i < n; i++)
       {
+        const b2ParticleHandle* handle = b2particles->GetParticleHandleFromIndex(i);
+
         b2Vec2& loc = locs[i]; 
         fisica->world_to_screen(loc, screen_loc);
         bool tierra_firme = tierra->is_tierra_firme(screen_loc);
 
-        set<int>::iterator it = particles_in_tierra.find(i);
+        set<const b2ParticleHandle*>::iterator it = particles_in_tierra.find(handle);
         bool saved_in_tierra = it != particles_in_tierra.end();
 
         //enter tierra firme
         if (tierra_firme && !saved_in_tierra)
         {
-          particles_in_tierra.insert(i);
+          particles_in_tierra.insert(handle);
           b2particles->SetParticleLifetime(i, lifetime_tierra);
         }
 
@@ -191,10 +194,6 @@ class Particles
           particles_in_tierra.erase(it);
           b2particles->SetParticleLifetime(i, lifetime);
         }
-
-        //left tierra but still w/lifetime_tierra -> zombies???
-        //if (!tierra_firme && !saved_in_tierra && b2particles->GetParticleLifetime(i) > lifetime)
-          //b2particles->SetParticleLifetime(i, lifetime);
       }
     };
 
