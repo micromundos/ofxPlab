@@ -31,8 +31,8 @@ class Particles
       max_speed = 3.;
       max_force = 0.;
       render_size = 4.;
-      lifetime = 1.; //20.;
-      lifetime_tierra = 10.; //-1.;
+      lifetime = 3.;
+      lifetime_tierra = 60.;
 
       mesh.setMode(OF_PRIMITIVE_POINTS);
 
